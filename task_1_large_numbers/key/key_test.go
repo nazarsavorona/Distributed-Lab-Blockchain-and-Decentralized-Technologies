@@ -1,6 +1,7 @@
 package key
 
 import (
+	"math/big"
 	"reflect"
 	"testing"
 )
@@ -66,6 +67,73 @@ func TestKeySpace(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := keySpace(tt.bits).String(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("keySpace() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGenerateKey(t *testing.T) {
+	tests := []struct {
+		name       string
+		bits       int64
+		upperBound *big.Int
+		wantErr    bool
+		rounds     int
+	}{
+		{
+			name:       "4 bits",
+			bits:       4,
+			upperBound: keySpace(4),
+			wantErr:    false,
+			rounds:     10,
+		},
+		{
+			name:       "128 bits",
+			bits:       128,
+			upperBound: keySpace(128),
+			wantErr:    false,
+			rounds:     7,
+		},
+		{
+			name:       "2048 bits",
+			bits:       2048,
+			upperBound: keySpace(2048),
+			wantErr:    false,
+			rounds:     5,
+		},
+		{
+			name:       "4096 bits",
+			bits:       4096,
+			upperBound: keySpace(4096),
+			wantErr:    false,
+			rounds:     50,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for i := 0; i < tt.rounds; i++ {
+				got, err := generateKey(tt.bits)
+
+				if (err != nil) != tt.wantErr {
+					t.Errorf("generateKey() error = %v, wantErr %v", err, tt.wantErr)
+					return
+				}
+
+				cmp := got.Cmp(tt.upperBound)
+				// means that got must be less than upperBound
+				want := -1
+
+				if cmp != want {
+					t.Errorf("generateKey() is greater than upper bound")
+				}
+
+				cmp = got.Cmp(big.NewInt(0))
+
+				// means that got must be greater or equal to zero
+				if cmp == -1 {
+					t.Errorf("generateKey() is less than zero")
+				}
 			}
 		})
 	}

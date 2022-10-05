@@ -13,8 +13,8 @@ func keySpace(bitsCount int64) *big.Int {
 }
 
 func generateKey(bitsCount int64) (*big.Int, error) {
-	max := new(big.Int)
-	max = keySpace(bitsCount).Sub(max, big.NewInt(1))
+	max := keySpace(bitsCount)
+	max = max.Sub(max, big.NewInt(1))
 
 	n, err := rand.Int(rand.Reader, max)
 
