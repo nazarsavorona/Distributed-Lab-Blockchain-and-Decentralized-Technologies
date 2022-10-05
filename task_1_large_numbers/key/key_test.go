@@ -65,8 +65,8 @@ func TestKeySpace(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := keySpace(tt.bits).String(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("keySpace() = %v, want %v", got, tt.want)
+			if got := KeySpace(tt.bits).String(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("KeySpace() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -83,28 +83,28 @@ func TestGenerateKey(t *testing.T) {
 		{
 			name:       "4 bits",
 			bits:       4,
-			upperBound: keySpace(4),
+			upperBound: KeySpace(4),
 			wantErr:    false,
 			rounds:     10,
 		},
 		{
 			name:       "128 bits",
 			bits:       128,
-			upperBound: keySpace(128),
+			upperBound: KeySpace(128),
 			wantErr:    false,
 			rounds:     7,
 		},
 		{
 			name:       "2048 bits",
 			bits:       2048,
-			upperBound: keySpace(2048),
+			upperBound: KeySpace(2048),
 			wantErr:    false,
 			rounds:     5,
 		},
 		{
 			name:       "4096 bits",
 			bits:       4096,
-			upperBound: keySpace(4096),
+			upperBound: KeySpace(4096),
 			wantErr:    false,
 			rounds:     50,
 		},
@@ -113,10 +113,10 @@ func TestGenerateKey(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for i := 0; i < tt.rounds; i++ {
-				got, err := generateKey(tt.bits)
+				got, err := GenerateKey(tt.bits)
 
 				if (err != nil) != tt.wantErr {
-					t.Errorf("generateKey() error = %v, wantErr %v", err, tt.wantErr)
+					t.Errorf("GenerateKey() error = %v, wantErr %v", err, tt.wantErr)
 					return
 				}
 
@@ -125,14 +125,14 @@ func TestGenerateKey(t *testing.T) {
 				want := -1
 
 				if cmp != want {
-					t.Errorf("generateKey() is greater than upper bound")
+					t.Errorf("GenerateKey() is greater than upper bound")
 				}
 
 				cmp = got.Cmp(big.NewInt(0))
 
 				// means that got must be greater or equal to zero
 				if cmp == -1 {
-					t.Errorf("generateKey() is less than zero")
+					t.Errorf("GenerateKey() is less than zero")
 				}
 			}
 		})
